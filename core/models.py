@@ -1,27 +1,28 @@
-from django.contrib.auth.hashers import make_password
+from django.conf import settings
 from django.db import models
-from rest_framework.authtoken.models import Token
 
 
-class Academia(models.Model):
-    nome = models.CharField(max_length=255)
-    cnpj = models.CharField(max_length=14, null=True, blank=True, unique=True)
-    email = models.CharField(max_length=255, unique=True)
-    senha = models.CharField(max_length=255)
+class DadosBasicos(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE)
+    endereco = models.CharField(max_length=255, null=True, blank=True)
     telefone = models.CharField(max_length=11, null=True, blank=True)
-    endereco = models.CharField(max_length=255)
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        self.senha = make_password(self.senha)
-        super(Academia, self).save(force_insert, force_update, using, update_fields)
+    class Meta:
+        abstract = True
+
+
+class Academia(DadosBasicos):
+    cnpj = models.CharField(max_length=14, null=True, blank=True, unique=True)
 
     def __str__(self):
-        return self.nome
+        return self.user.username
 
 
-class TokenAcademia(Token):
-    user = models.OneToOneField(
-        Academia, related_name='academia_token',
-        on_delete=models.CASCADE)
-    key = models.CharField("Key", max_length=40, primary_key=True)
+class Aluno(DadosBasicos):
+    cpf = models.CharField(max_length=11, null=True, blank=True)
+
+    def __str__(self):
+        return self.user.username
+
