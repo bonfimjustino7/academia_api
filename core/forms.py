@@ -30,26 +30,39 @@ class DadosBasicosForm(forms.ModelForm):
 
         return senha
 
+    def clean_email(self):
+        User = get_user_model()
+
+        if not self.instance.pk: # quando não existir
+            if User.objects.filter(email=self.cleaned_data.get('email')).exists():
+                self.add_error('email', 'Este email já está sendo usado por outro usuário')
+        else:
+            if self.data.get('email') != self.instance.user.email and User.objects.filter(email=self.cleaned_data.get('email')).exists():
+                self.add_error('email', 'Este email já está sendo usado por outro usuário')
+
+        return self.cleaned_data.get('email')
+
     class Meta:
         model = DadosBasicos
         fields = ('nome', 'endereco', 'email', 'password', 'telefone')
 
     def save(self, commit=True):
         User = get_user_model()
-        user = User.objects.filter(email=self.data.get('email')).last()
-        if not user:
+
+        if not self.instance.pk:
             user = User.objects.create_user(username=self.data.get('nome'),
                                             email=self.data.get('email'),
                                             password=self.data.get('password')
                                             )
+            self.instance.user = user
         else:
+            user = self.instance.user
             user.username = self.data.get('nome')
             user.email = self.data.get('email')
             if self.data.get('password'):
                 user.set_password(self.data.get('password'))
 
             user.save()
-        self.instance.user = user
         return super(DadosBasicosForm, self).save(commit)
 
 

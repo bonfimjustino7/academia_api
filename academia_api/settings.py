@@ -48,6 +48,7 @@ REST_FRAMEWORK = {
     ]
 }
 
+AUTH_USER_MODEL = 'core.UserCustom'  # custom model user default django
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
