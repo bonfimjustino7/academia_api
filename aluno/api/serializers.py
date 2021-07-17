@@ -19,24 +19,20 @@ class AlunoSerializer(serializers.ModelSerializer):
 
 class AlunoSerializerInput(serializers.Serializer):
     nome = serializers.CharField(write_only=True)
-    email = serializers.EmailField(write_only=True, validators=[UniqueValidator(queryset=User.objects.all(), message='Este email já está sendo usado por outro usuário')])
-    cpf = serializers.CharField(required=False, write_only=True, validators=[UniqueValidator(queryset=Aluno.objects.all(), message='Este cpf já está sendo usado por outro usuário')])
+    email = serializers.EmailField(write_only=True, validators=[
+        UniqueValidator(queryset=User.objects.all(),
+                        message='Este email já está sendo usado por outro usuário')])
+    cpf = serializers.CharField(required=False, write_only=True, validators=[
+        UniqueValidator(queryset=Aluno.objects.all(),
+                        message='Este cpf já está sendo usado por outro usuário')])
     telefone = serializers.CharField(required=False, write_only=True)
     endereco = serializers.CharField(required=False, write_only=True)
     password = serializers.CharField(write_only=True)
 
     def create(self, validated_data):
-        User = get_user_model()
-
-        user = User.objects.create_user(username=validated_data.pop('nome'),
-                                        email=validated_data.pop('email'),
-                                        password=validated_data.pop('password')
-                                        )
-        validated_data['user'] = user
-
-        aluno = Aluno.objects.create(**validated_data)
-
+        aluno = Aluno.objects.create_aluno(**validated_data)
         return aluno
+
 
 class AlunoSerializerUpdateInput(AlunoSerializerInput):
     password = serializers.CharField(required=False)
@@ -58,6 +54,7 @@ class AlunoSerializerUpdateInput(AlunoSerializerInput):
                 setattr(instance, attr, value)
 
         return instance
+
 
 class AlunoChangePasswordSerialser(serializers.Serializer):
     password = serializers.CharField(max_length=255)
