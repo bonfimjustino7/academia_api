@@ -1,17 +1,42 @@
 from rest_framework import viewsets, status
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
-
-from .serializers import AlunoSerializer, AlunoSerializerInput
-from ..models import Aluno
 from rest_framework.response import Response
 
+from auth_api.api.viewsets import ModelViewSetOwner
+from .serializers import AlunoSerializer, AlunoSerializerInput, AlunoSerializerUpdateInput, \
+    AlunoChangePasswordSerialser
+from ..models import Aluno
 
-class AlunoViewSet(viewsets.ModelViewSet):
+
+class AlunoViewSet(ModelViewSetOwner):
     permission_classes = [IsAuthenticated]
     queryset = Aluno.objects.all()
     serializer_class = AlunoSerializer
 
     def get_serializer_class(self):
-        if self.action == 'create':
+        if self.action == 'update' or self.action == 'partial_update':
+            return AlunoSerializerUpdateInput
+        elif self.action == 'create':
             return AlunoSerializerInput
         return self.serializer_class
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        serializer = AlunoSerializer(instance=instance)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['patch'], url_name='change_password', url_path='change_password')
+    def change_password(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = AlunoChangePasswordSerialser(instance=instance, data=request.data,
+                                                     partial=True)
+        serializer.is_valid(raise_exception=True)
+
+        self.perform_update(serializer)
+
+        return Response({'result': 'Senha alterada'})
