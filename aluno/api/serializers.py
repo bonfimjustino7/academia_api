@@ -30,7 +30,7 @@ class AlunoSerializerInput(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
     def create(self, validated_data):
-        aluno = Aluno.objects.create_aluno(**validated_data)
+        aluno = Aluno.objects.create_user(**validated_data)
         return aluno
 
 

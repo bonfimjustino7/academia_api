@@ -28,7 +28,7 @@ class AcademiaSerializerInput(serializers.Serializer):
     user_id = serializers.CharField(source='user.pk', read_only=True)
 
     def create(self, validated_data):
-        academia = Academia.objects.create_academia(**validated_data)
+        academia = Academia.objects.create_user(**validated_data)
         return academia
 
 
