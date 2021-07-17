@@ -1,27 +1,18 @@
 from django.contrib.auth import get_user_model
-from rest_framework import viewsets, status
 from rest_framework.decorators import action
-from rest_framework.exceptions import ValidationError
-from rest_framework.permissions import IsAuthenticated
 
 from .serializers import AcademiaSerializer, AcademiaSerializerInput, \
     AcademiaSerializerUpdateInput, AcademiaChangePasswordSerialser
 from ..models import Academia
 from rest_framework.response import Response
+from auth_api.api.viewsets import ModelViewSetOwner
 
 User = get_user_model()
 
 
-class AcademiaViewSet(viewsets.ModelViewSet):
+class AcademiaViewSet(ModelViewSetOwner):
     queryset = Academia.objects.all()
     serializer_class = AcademiaSerializer
-
-    def get_permissions(self):
-        if self.action != 'create':
-            permissions = [IsAuthenticated]
-        else:
-            permissions = []
-        return [permission() for permission in permissions]
 
     def get_serializer_class(self):
         if self.action == 'update' or self.action == 'partial_update':
@@ -45,8 +36,6 @@ class AcademiaViewSet(viewsets.ModelViewSet):
         serializer = AcademiaChangePasswordSerialser(instance=instance, data=request.data,
                                                      partial=True)
         serializer.is_valid(raise_exception=True)
-        if request.auth.user != instance.user:
-            raise ValidationError(detail={'error': 'Token não autorizado'}, code=status.HTTP_401_UNAUTHORIZED)
 
         self.perform_update(serializer)
 

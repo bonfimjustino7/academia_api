@@ -40,6 +40,7 @@ class AcademiaSerializerInput(serializers.Serializer):
 
 
 class AcademiaSerializerUpdateInput(AcademiaSerializerInput):
+    password = serializers.CharField(required=False)
 
     def validate(self, attrs):
         attrs.pop('password') if attrs.get('password') else None
