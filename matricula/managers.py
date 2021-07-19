@@ -11,7 +11,7 @@ class MensalidadeManager(models.Manager):
         for mes in range(1, 13):
             data_vencimento = now + relativedelta(months=mes)
             mensalidade = Mensalidade(matricula=matriucula, dt_vencimento=data_vencimento,
-                                      mes_referente=mes)
+                                      mes_referente=data_vencimento.month)
             mensalidades.append(mensalidade)
 
         Mensalidade.objects.bulk_create(mensalidades)
