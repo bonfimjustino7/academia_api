@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'academia',
     'aluno',
     'auth_api',
+    'matricula'
 ]
 
 REST_FRAMEWORK = {

@@ -10,7 +10,6 @@ from ..models import Aluno
 
 
 class AlunoViewSet(ModelViewSetOwner):
-    permission_classes = [IsAuthenticated]
     queryset = Aluno.objects.all()
     serializer_class = AlunoSerializer
 
