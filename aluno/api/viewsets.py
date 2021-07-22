@@ -29,6 +29,15 @@ class AlunoViewSet(ModelViewSetOwner):
         serializer = AlunoSerializer(instance=instance)
         return Response(serializer.data)
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        aluno = serializer.instance
+        serializer = AlunoSerializer(instance=aluno)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
     @action(detail=True, methods=['patch'], url_name='change_password', url_path='change_password')
     def change_password(self, request, *args, **kwargs):
         instance = self.get_object()

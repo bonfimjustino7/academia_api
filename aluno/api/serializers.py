@@ -3,7 +3,9 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueValidator
 
+from academia.models import Academia
 from ..models import Aluno
+from matricula.models import Matricula
 
 User = get_user_model()
 
@@ -11,10 +13,18 @@ User = get_user_model()
 class AlunoSerializer(serializers.ModelSerializer):
     nome = serializers.CharField(source='user.username')
     email = serializers.CharField(source='user.email')
+    academia = serializers.SerializerMethodField()
+
+    def get_academia(self, obj):
+        queryset = Matricula.objects.filter(aluno=obj)
+        if queryset.exists():
+            academia = queryset.last().academia.pk
+            return academia
+        return None
 
     class Meta:
         model = Aluno
-        fields = ('id', 'nome', 'cpf', 'email', 'telefone', 'endereco')
+        fields = ('id', 'nome', 'cpf', 'email', 'telefone', 'endereco', 'academia')
 
 
 class AlunoSerializerInput(serializers.Serializer):
@@ -28,6 +38,7 @@ class AlunoSerializerInput(serializers.Serializer):
     telefone = serializers.CharField(required=False, write_only=True)
     endereco = serializers.CharField(required=False, write_only=True)
     password = serializers.CharField(write_only=True)
+    academia = serializers.PrimaryKeyRelatedField(queryset=Academia.objects.all(), write_only=True)
 
     def create(self, validated_data):
         aluno = Aluno.objects.create_user(**validated_data)

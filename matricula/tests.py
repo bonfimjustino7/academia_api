@@ -1,7 +1,17 @@
-from .models import Matricula, Mensalidade
-from academia.models import Academia
-from aluno.models import Aluno
+import datetime
+
+from .models import Mensalidade
 from rest_framework.test import APITestCase
+from dateutil.relativedelta import relativedelta
+
+
+def _get_date_mensalidades_mock():
+    mensalidades = []
+    for i in range(1, 13):
+        mensalidades.append(
+            {'dt_vencimento': str(datetime.datetime.now().date() + relativedelta(months=i))}
+        )
+    return mensalidades
 
 
 class MatriculaTest(APITestCase):
@@ -15,7 +25,8 @@ class MatriculaTest(APITestCase):
             "password": "123",
             "telefone": "8899211128",
             "endereco": "Rua funlando de tal",
-            "cpf": "12345"
+            "cpf": "12345",
+            "academia": 1,
         }
         data_academia = {
             "nome": "Academia",
@@ -25,31 +36,15 @@ class MatriculaTest(APITestCase):
             "endereco": "Rua funlando de tal",
             "cnpj": "12345"
         }
-        self.client.post(self.base_url_aluno, data_aluno)
         self.client.post(self.base_url_academia, data_academia)
-        academia = Academia.objects.all().first()
-        aluno = Aluno.objects.all().first()
-        Matricula.objects.create(aluno=aluno, academia=academia)
+        self.client.post(self.base_url_aluno, data_aluno)
 
     def test_count_mensalidades(self):
         count_mensalidades = Mensalidade.objects.count()
         self.assertEqual(count_mensalidades, 12)
 
     def test_vencimento_mensalidades(self):
-        mensalidades_dict = [
-               {'dt_vencimento': '2021-08-18'},
-               {'dt_vencimento': '2021-09-18'},
-               {'dt_vencimento': '2021-10-18'},
-               {'dt_vencimento': '2021-11-18'},
-               {'dt_vencimento': '2021-12-18'},
-               {'dt_vencimento': '2022-01-18'},
-               {'dt_vencimento': '2022-02-18'},
-               {'dt_vencimento': '2022-03-18'},
-               {'dt_vencimento': '2022-04-18'},
-               {'dt_vencimento': '2022-05-18'},
-               {'dt_vencimento': '2022-06-18'},
-               {'dt_vencimento': '2022-07-18'},
-        ]
+        mensalidades_dict = _get_date_mensalidades_mock()
 
         mensalidades_queryset = Mensalidade.objects.values('dt_vencimento')
         mensalidades = []
