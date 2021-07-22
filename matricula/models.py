@@ -21,6 +21,7 @@ class Matricula(models.Model):
 class Mensalidade(models.Model):
     dt_emissao = models.DateField(auto_now_add=True)
     mes_referente = models.IntegerField(choices=MESES)
+    ano = models.IntegerField()
     dt_vencimento = models.DateField()
     status = models.CharField(max_length=2, choices=STATUS_MENSALIDADE, default=NAO_PAGO)
     matricula = models.ForeignKey(Matricula, on_delete=models.CASCADE)
