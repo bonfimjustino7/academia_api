@@ -1,5 +1,6 @@
 import datetime
 
+from aluno.models import Aluno
 from .models import Mensalidade
 from rest_framework.test import APITestCase
 from dateutil.relativedelta import relativedelta
@@ -17,6 +18,7 @@ def _get_date_mensalidades_mock():
 class MatriculaTest(APITestCase):
     base_url_aluno = '/api/aluno/'
     base_url_academia = '/api/academia/'
+    base_url_mensalidade = '/api/matricula/1/mensalidades/'
 
     def setUp(self) -> None:
         data_aluno = {
@@ -53,3 +55,10 @@ class MatriculaTest(APITestCase):
             mensalidades.append({'dt_vencimento': str(v)})
 
         self.assertEqual(mensalidades_dict, mensalidades)
+
+    def test_list_mensalidades(self):
+        # user = Aluno.objects.get(pk=1).user
+        # self.client.credentials(HTTP_AUTHORIZATION='Token ' + user.auth_token.key)
+        response = self.client.get(self.base_url_mensalidade)
+
+        self.assertEqual(response.status_code, 200)
