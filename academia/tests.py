@@ -70,12 +70,11 @@ class AcademiaTest(APITestCase):
             "password": "123",
             "telefone": "8899211128",
             "endereco": "Rua funlando de tal",
-            "cnpj": "12345"
+            "cnpj": "12347"
         }
         response = self.client.post(self.base_url, data)
         self.assertEqual(response.json(),
-                         {'email': ['Este email já está sendo usado por outro usuário'],
-                          'cnpj': ['Este cnpj já está sendo usado por outro usuário']})
+                         {'email': ['Este email já está sendo usado por outro usuário']})
 
         # update
         pk = 2

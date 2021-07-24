@@ -1,9 +1,11 @@
+from django.db.models import Q
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from auth_api.api.viewsets import ModelViewSetOwner
+from matricula.models import Matricula
 from .serializers import AlunoSerializer, AlunoSerializerInput, AlunoSerializerUpdateInput, \
     AlunoChangePasswordSerialser
 from ..models import Aluno
@@ -20,12 +22,20 @@ class AlunoViewSet(ModelViewSetOwner):
             return AlunoSerializerInput
         return self.serializer_class
 
+    def get_permissions(self):
+        if self.action == 'destroy':
+            return [IsAuthenticated()]
+        return super(AlunoViewSet, self).get_permissions()
+
+    def get_queryset(self):
+        matricula = Matricula.objects.filter(Q(aluno__user=self.request.user) | Q(academia__user=self.request.user))
+        if not matricula.exists():
+            return self.queryset.none()
+        return super(AlunoViewSet, self).get_queryset()
+
     def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
+        super(AlunoViewSet, self).update(request, *args, **kwargs)
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
         serializer = AlunoSerializer(instance=instance)
         return Response(serializer.data)
 

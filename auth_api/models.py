@@ -14,6 +14,14 @@ class DadosBasicos(models.Model):
     class Meta:
         abstract = True
 
+    def delete(self, using=None, keep_parents=False):
+        """
+        Apaga o aluno/academia e o usuário associado
+        """
+        if self.user:
+            self.user.delete()
+        return super(DadosBasicos, self).delete(using, keep_parents)
+
 
 class UserCustom(AbstractUser):
     USERNAME_FIELD = 'email'

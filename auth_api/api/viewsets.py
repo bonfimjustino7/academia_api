@@ -32,8 +32,8 @@ class ModelViewSetOwner(viewsets.GenericViewSet,
         ViewSet para models relacionados com usuario
     """
     def get_permissions(self):
-        if self.action != 'create':
-            permissions = [IsAuthenticatedOwner]
+        if self.action == 'create':
+            permissions = self.permission_classes
         else:
-            permissions = []
+            permissions = [IsAuthenticatedOwner]
         return [permission() for permission in permissions]

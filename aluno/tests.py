@@ -92,13 +92,12 @@ class AlunoTest(APITestCase):
             "password": "123",
             "telefone": "8899211128",
             "endereco": "Rua funlando de tal",
-            "cpf": "12345",
+            "cpf": "123425",
             "academia": 1
         }
         response = self.client.post(self.base_url_aluno, data)
         self.assertEqual(response.json(),
-                         {'email': ['Este email já está sendo usado por outro usuário'],
-                          'cpf': ['Este cpf já está sendo usado por outro usuário']})
+                         {'email': ['Este email já está sendo usado por outro usuário'],})
 
         # update
         pk = 2

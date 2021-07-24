@@ -8,7 +8,7 @@ from dateutil.relativedelta import relativedelta
 
 def _get_date_mensalidades_mock():
     mensalidades = []
-    for i in range(1, 13):
+    for i in range(0, 12):
         mensalidades.append(
             {'dt_vencimento': str(datetime.datetime.now().date() + relativedelta(months=i))}
         )
@@ -57,8 +57,8 @@ class MatriculaTest(APITestCase):
         self.assertEqual(mensalidades_dict, mensalidades)
 
     def test_list_mensalidades(self):
-        # user = Aluno.objects.get(pk=1).user
-        # self.client.credentials(HTTP_AUTHORIZATION='Token ' + user.auth_token.key)
+        user = Aluno.objects.get(pk=1).user
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + user.auth_token.key)
         response = self.client.get(self.base_url_mensalidade)
 
         self.assertEqual(response.status_code, 200)

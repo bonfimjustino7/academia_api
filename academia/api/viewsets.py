@@ -22,11 +22,8 @@ class AcademiaViewSet(ModelViewSetOwner):
         return self.serializer_class
 
     def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
+        super(AcademiaViewSet, self).update(request, *args, **kwargs)
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
         serializer = AcademiaSerializer(instance=instance)
         return Response(serializer.data)
 

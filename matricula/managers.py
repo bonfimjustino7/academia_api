@@ -7,10 +7,10 @@ class MensalidadeManager(models.Manager):
     def generate_mensalidades(self, matricula):
         now = datetime.date.today()
         mensalidades = []
-        for mes in range(1, 13):
+        for mes in range(0, 12):
             data_vencimento = now + relativedelta(months=mes)
             mensalidade = self.model(matricula=matricula, dt_vencimento=data_vencimento,
-                                     mes_referente=now.month, ano=now.year)
+                                     mes_referente=data_vencimento.month, ano=data_vencimento.year)
             mensalidades.append(mensalidade)
 
         self.bulk_create(mensalidades)
