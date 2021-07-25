@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework.decorators import action
 
+from matricula.models import Matricula
 from .serializers import AcademiaSerializer, AcademiaSerializerInput, \
     AcademiaSerializerUpdateInput, AcademiaChangePasswordSerialser
 from ..models import Academia
@@ -37,3 +38,12 @@ class AcademiaViewSet(ModelViewSetOwner):
         self.perform_update(serializer)
 
         return Response({'result': 'Senha alterada'})
+
+    @action(detail=True, methods=['get'], url_name='estatisticas', url_path='estatisticas')
+    def estatisticas(self, request, *args, **kwargs):
+        academia = self.get_object()
+        data = {
+            'alunos_ativos': academia.alunos_ativos,
+            'alunos_inativos': academia.alunos_inativos,
+        }
+        return Response(data)
