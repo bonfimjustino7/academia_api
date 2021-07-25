@@ -45,10 +45,16 @@ class AuthSerializerInput(serializers.Serializer):
 
 class AuthSerializerOutput(serializers.Serializer):
     token = serializers.CharField(read_only=True, source='auth_token.key')
-    user_id = serializers.CharField(read_only=True, source='pk')
+    user_id = serializers.SerializerMethodField()
     nome = serializers.CharField(read_only=True, source='username')
     is_aluno = serializers.SerializerMethodField()
     is_academia = serializers.SerializerMethodField()
+
+    def get_user_id(self, obj):
+        if hasattr(obj, 'aluno'):
+            return obj.aluno.pk
+        else:
+            return obj.academia.pk
 
     def get_is_aluno(self, obj):
         return hasattr(obj, 'aluno')
