@@ -70,6 +70,7 @@ class AcademiaSerializerUpdateInput(AcademiaSerializerInput):
         return instance
 
 
+# TODO mover para o app auth
 class AcademiaChangePasswordSerialser(serializers.Serializer):
     password = serializers.CharField(max_length=255)
     confirmed_password = serializers.CharField(max_length=255)

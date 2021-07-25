@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, get_user_model
 from rest_framework import serializers
 
 
-class AuthSerializer(serializers.Serializer):
+class AuthSerializerInput(serializers.Serializer):
     email = serializers.EmailField(
         label="Email",
         write_only=True
@@ -42,3 +42,16 @@ class AuthSerializer(serializers.Serializer):
         attrs['user'] = user
         return attrs
 
+
+class AuthSerializerOutput(serializers.Serializer):
+    token = serializers.CharField(read_only=True, source='auth_token.key')
+    user_id = serializers.CharField(read_only=True, source='pk')
+    nome = serializers.CharField(read_only=True, source='username')
+    is_aluno = serializers.SerializerMethodField()
+    is_academia = serializers.SerializerMethodField()
+
+    def get_is_aluno(self, obj):
+        return hasattr(obj, 'aluno')
+
+    def get_is_academia(self, obj):
+        return hasattr(obj, 'academia')
