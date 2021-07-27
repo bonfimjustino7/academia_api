@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework.decorators import action
 
-from matricula.models import Matricula
 from .serializers import AcademiaSerializer, AcademiaSerializerInput, \
     AcademiaSerializerUpdateInput, AcademiaChangePasswordSerialser
 from ..models import Academia

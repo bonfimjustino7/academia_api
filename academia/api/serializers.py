@@ -19,7 +19,7 @@ class AcademiaSerializer(serializers.ModelSerializer):
 
 
 class AcademiaSerializerInput(serializers.Serializer):
-    nome = serializers.CharField(write_only=True)
+    nome = serializers.CharField(source='user.username')
     email = serializers.EmailField(write_only=True)
     password = serializers.CharField(write_only=True)
     cnpj = serializers.CharField(required=False, write_only=True,
@@ -28,7 +28,16 @@ class AcademiaSerializerInput(serializers.Serializer):
     telefone = serializers.CharField(required=False, write_only=True)
     endereco = serializers.CharField(required=False, write_only=True)
     token = serializers.CharField(source='user.auth_token.key', read_only=True)
-    user_id = serializers.CharField(source='user.pk', read_only=True)
+    user_id = serializers.CharField(source='pk', read_only=True)
+
+    def to_internal_value(self, data):
+        data = super(AcademiaSerializerInput, self).to_internal_value(data)
+        data_output = data.copy()
+        if data.get('user'):
+            data_output['nome'] = data['user']['username']
+            data_output.pop('user')
+
+        return data_output
 
     def validate(self, attrs):
         if User.objects.filter(email=attrs.get('email')):

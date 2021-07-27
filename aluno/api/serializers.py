@@ -29,7 +29,7 @@ class AlunoSerializer(serializers.ModelSerializer):
 
 
 class AlunoSerializerInput(serializers.Serializer):
-    nome = serializers.CharField(write_only=True)
+    nome = serializers.CharField(source='user.username')
     email = serializers.EmailField(write_only=True, validators=[
         UniqueValidator(queryset=User.objects.all(),
                         message='Este email já está sendo usado por outro usuário')])
@@ -40,6 +40,26 @@ class AlunoSerializerInput(serializers.Serializer):
     endereco = serializers.CharField(required=False, write_only=True)
     password = serializers.CharField(write_only=True)
     academia = serializers.PrimaryKeyRelatedField(queryset=Academia.objects.all(), write_only=True)
+
+    # Output
+    token = serializers.CharField(source='user.auth_token.key', read_only=True)
+    user_id = serializers.CharField(source='pk', read_only=True)
+    academia_id = serializers.SerializerMethodField(read_only=True)
+
+    def get_academia_id(self, aluno):
+        academia = Matricula.objects.filter(aluno=aluno, status=ATIVA).last()
+        if academia:
+            return academia.pk
+        return None
+
+    def to_internal_value(self, data):
+        data = super(AlunoSerializerInput, self).to_internal_value(data)
+        data_output = data.copy()
+        if data.get('user'):
+            data_output['nome'] = data['user']['username']
+            data_output.pop('user')
+
+        return data_output
 
     def validate(self, attrs):
         if User.objects.filter(email=attrs.get('email')):
