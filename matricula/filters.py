@@ -1,7 +1,30 @@
+from django.db.models import Q
 from django_filters import rest_framework as filters
 
-from matricula.constants import STATUS_MENSALIDADE
-from matricula.models import Mensalidade
+from matricula.constants import STATUS_MENSALIDADE, STATUS_MATRICULA
+from matricula.models import Mensalidade, Matricula
+
+
+class MatriculaFilters(filters.FilterSet):
+    status = filters.ChoiceFilter(
+        field_name='status',
+        choices=STATUS_MATRICULA,
+        lookup_expr="iexact",
+        label="Status",
+    )
+    search = filters.CharFilter(
+        method='search_method',
+        label='search'
+    )
+
+    def search_method(self, queryset, name, value):
+        return queryset.filter(
+            Q(aluno__user__username__icontains=value) | Q(id__iexact=value)
+        )
+
+    class Meta:
+        model = Matricula
+        fields = ('status', 'search')
 
 
 class MensalidadeFilters(filters.FilterSet):

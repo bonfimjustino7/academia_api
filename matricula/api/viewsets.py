@@ -3,15 +3,16 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 
-from ..filters import MensalidadeFilters
+from ..filters import MensalidadeFilters, MatriculaFilters
 from ..models import Matricula, Mensalidade
 from .serializers import MatriculaSerializerOutput, MensalidadeSerializerOutput
 
 
 class MatriculaViewSet(GenericViewSet, ListModelMixin, RetrieveModelMixin):
     permission_classes = [IsAuthenticated]
-    queryset = Matricula.objects.all()
+    queryset = Matricula.objects.all().order_by('status', 'aluno__user__username')
     serializer_class = MatriculaSerializerOutput
+    filter_class = MatriculaFilters
 
     def get_queryset(self):
         return self.queryset.filter(Q(aluno__user=self.request.user) | Q(academia__user=self.request.user))
