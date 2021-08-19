@@ -22,6 +22,6 @@ class IsAlunoPermission(BasePermission):
         """
         return bool(
             obj.user and request.auth.user == obj.user or
-            Matricula.objects.filter(academia__user=request.auth.user, status=ATIVA).count() == 1
+            Matricula.objects.filter(academia__user=request.auth.user, aluno__user=obj.user).count()
         )
 
