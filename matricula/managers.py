@@ -4,6 +4,7 @@ from dateutil.relativedelta import relativedelta
 
 
 class MensalidadeManager(models.Manager):
+    # TODO adicionar quantidade de parcelas e o valor da parcela
     def generate_mensalidades(self, matricula):
         now = datetime.date.today()
         mensalidades = []

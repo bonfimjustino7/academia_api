@@ -5,7 +5,7 @@ from rest_framework.validators import UniqueValidator, UniqueTogetherValidator
 
 from academia.models import Academia
 from matricula.constants import ATIVA
-from ..models import Aluno
+from ..models import Aluno, Medicao
 from matricula.models import Matricula
 
 User = get_user_model()
@@ -119,3 +119,16 @@ class AlunoChangePasswordSerialser(serializers.Serializer):
         instance.user.set_password(validated_data.get('password'))
         instance.user.save()
         return instance
+
+
+class MedicoesSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = '__all__'
+        model = Medicao
+
+    def validate(self, data):
+        data_valid = data.copy()
+        data_valid.pop('aluno')
+        if not data_valid:
+            raise ValidationError({'medicoes': 'Nenhuma medição foi enviada.'}, code=400)
+        return data

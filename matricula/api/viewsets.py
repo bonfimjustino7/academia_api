@@ -14,6 +14,7 @@ class MatriculaViewSet(GenericViewSet, ListModelMixin, RetrieveModelMixin):
     serializer_class = MatriculaSerializerOutput
     filter_class = MatriculaFilters
 
+    # retorna a matricula do aluno autenticado ou as matriculas da academia
     def get_queryset(self):
         return self.queryset.filter(Q(aluno__user=self.request.user) | Q(academia__user=self.request.user))
 
