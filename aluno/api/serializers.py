@@ -74,6 +74,12 @@ class AlunoSerializerInput(serializers.Serializer):
 
 class AlunoSerializerUpdateInput(AlunoSerializerInput):
     password = serializers.CharField(required=False)
+    nome = serializers.CharField(required=False)
+    email = serializers.EmailField(write_only=True, required=False, validators=[
+        UniqueValidator(queryset=User.objects.all(),
+                        message='Este email já está sendo usado por outro usuário')])
+    academia = serializers.PrimaryKeyRelatedField(queryset=Academia.objects.all(), write_only=True,
+                                                  required=False)
 
     def validate(self, attrs):
         if self.instance and self.instance.user.email != attrs.get('email'):
@@ -125,10 +131,20 @@ class MedicoesSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Medicao
-
+    
+    def to_internal_value(self, data):
+        """
+            Seta para nulo as mediçoes zeradas
+        """
+        for k, v in data.items():
+            if v in (0, 0.0, '0.0'):
+                data[k] = None    
+       
+        return super(MedicoesSerializer, self).to_internal_value(data)
+    
     def validate(self, data):
         data_valid = data.copy()
         data_valid.pop('aluno')
         if not data_valid:
-            raise ValidationError({'medicoes': 'Nenhuma medição foi enviada.'}, code=400)
+            raise ValidationError({'medicoes': 'Informe medições válidas.'}, code=400)
         return data

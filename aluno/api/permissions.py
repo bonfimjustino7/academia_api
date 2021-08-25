@@ -25,3 +25,12 @@ class IsAlunoPermission(BasePermission):
             Matricula.objects.filter(academia__user=request.auth.user, aluno__user=obj.user).count()
         )
 
+
+class IsMedicoesPermissions(IsAlunoPermission):
+
+    def has_object_permission(self, request, view, obj):
+        return bool(
+            obj.aluno.user and request.auth.user == obj.aluno.user or
+            Matricula.objects.filter(academia__user=request.auth.user,
+                                     aluno__user=obj.aluno.user).count()
+        )

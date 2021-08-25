@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from matricula.models import Matricula
 from ..models import Academia
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueValidator
@@ -20,7 +19,9 @@ class AcademiaSerializer(serializers.ModelSerializer):
 
 class AcademiaSerializerInput(serializers.Serializer):
     nome = serializers.CharField(source='user.username')
-    email = serializers.EmailField(write_only=True)
+    email = serializers.EmailField(write_only=True, validators=[
+        UniqueValidator(queryset=User.objects.all(),
+                        message='Este email já está sendo usado por outro usuário')])
     password = serializers.CharField(write_only=True)
     cnpj = serializers.CharField(required=False, write_only=True,
                                  validators=[UniqueValidator(queryset=Academia.objects.all(),
@@ -39,12 +40,6 @@ class AcademiaSerializerInput(serializers.Serializer):
 
         return data_output
 
-    def validate(self, attrs):
-        if User.objects.filter(email=attrs.get('email')):
-            raise serializers.ValidationError({"email": "Este email já está sendo usado por outro usuário"})
-
-        return attrs
-
     def create(self, validated_data):
         academia = Academia.objects.create_user(**validated_data)
         return academia
@@ -52,6 +47,10 @@ class AcademiaSerializerInput(serializers.Serializer):
 
 class AcademiaSerializerUpdateInput(AcademiaSerializerInput):
     password = serializers.CharField(required=False)
+    nome = serializers.CharField(required=False)
+    email = serializers.EmailField(write_only=True, required=False, validators=[
+        UniqueValidator(queryset=User.objects.all(),
+                        message='Este email já está sendo usado por outro usuário')])
 
     def validate(self, attrs):
         if self.instance and self.instance.user.email != attrs.get('email'):

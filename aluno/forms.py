@@ -3,4 +3,4 @@ from academia.forms import DadosBasicosForm
 
 
 class AlunoForm(DadosBasicosForm):
-    cpf = forms.CharField(max_length=11, required=False)
+    cpf = forms.CharField(max_length=14, required=False)

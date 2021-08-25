@@ -67,4 +67,4 @@ class DadosBasicosForm(forms.ModelForm):
 
 
 class AcademiaForm(DadosBasicosForm):
-    cnpj = forms.CharField(max_length=14, required=False)
+    cnpj = forms.CharField(max_length=18, required=False)

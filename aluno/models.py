@@ -30,7 +30,7 @@ class Medicao(models.Model):
     panturrilha_direta = models.FloatField(null=True, blank=True)
     panturrilha_esquerda = models.FloatField(null=True, blank=True)
 
-    data_criacao = models.DateField(auto_now_add=True)
+    data_criacao = models.DateTimeField(auto_now_add=True)
     aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE, related_name='medicoes')
 
     def __str__(self):
