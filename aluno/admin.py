@@ -23,7 +23,7 @@ class MedicoesAdmin(admin.StackedInline):
               "panturrilha_direta",
               "panturrilha_esquerda",
               "aluno",)
-    can_delete = False
+    can_delete = True
     extra = 0
 
 

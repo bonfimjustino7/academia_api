@@ -33,10 +33,10 @@ class AlunoSerializerInput(serializers.Serializer):
     email = serializers.EmailField(write_only=True, validators=[
         UniqueValidator(queryset=User.objects.all(),
                         message='Este email já está sendo usado por outro usuário')])
-    cpf = serializers.CharField(required=False, write_only=True, validators=[
+    cpf = serializers.CharField(required=False, allow_blank=True, write_only=True, validators=[
         UniqueValidator(queryset=Aluno.objects.all(),
                         message='Este cpf já está sendo usado por outro usuário')])
-    telefone = serializers.CharField(required=False, write_only=True)
+    telefone = serializers.CharField(required=False, write_only=True, allow_blank=True, allow_null=True)
     endereco = serializers.CharField(required=False, write_only=True)
     password = serializers.CharField(write_only=True)
     academia = serializers.PrimaryKeyRelatedField(queryset=Academia.objects.all(), write_only=True)
@@ -73,11 +73,9 @@ class AlunoSerializerInput(serializers.Serializer):
 
 
 class AlunoSerializerUpdateInput(AlunoSerializerInput):
-    password = serializers.CharField(required=False)
+    password = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     nome = serializers.CharField(required=False)
-    email = serializers.EmailField(write_only=True, required=False, validators=[
-        UniqueValidator(queryset=User.objects.all(),
-                        message='Este email já está sendo usado por outro usuário')])
+    email = serializers.EmailField(write_only=True, required=False)
     academia = serializers.PrimaryKeyRelatedField(queryset=Academia.objects.all(), write_only=True,
                                                   required=False)
 
@@ -97,7 +95,7 @@ class AlunoSerializerUpdateInput(AlunoSerializerInput):
         for attr, value in validated_data.items():
             if attr == 'email':
                 setattr(instance.user, attr, value)
-            elif attr == 'nome':
+            elif attr == 'username':
                 setattr(instance.user, 'username', value)
             elif attr in ('academia',) and value:
                 matricula = Matricula.objects.filter(aluno=instance, status=ATIVA).last()
