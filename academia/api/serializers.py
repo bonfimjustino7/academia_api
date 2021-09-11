@@ -23,11 +23,11 @@ class AcademiaSerializerInput(serializers.Serializer):
         UniqueValidator(queryset=User.objects.all(),
                         message='Este email já está sendo usado por outro usuário')])
     password = serializers.CharField(write_only=True)
-    cnpj = serializers.CharField(required=False, write_only=True,
+    cnpj = serializers.CharField(required=False, write_only=True, allow_blank=True, allow_null=True,
                                  validators=[UniqueValidator(queryset=Academia.objects.all(),
                                                              message='Este cnpj já está sendo usado por outro usuário')])
-    telefone = serializers.CharField(required=False, write_only=True)
-    endereco = serializers.CharField(required=False, write_only=True)
+    telefone = serializers.CharField(required=False, write_only=True, allow_blank=True, allow_null=True)
+    endereco = serializers.CharField(required=False, write_only=True, allow_blank=True, allow_null=True)
     token = serializers.CharField(source='user.auth_token.key', read_only=True)
     user_id = serializers.CharField(source='pk', read_only=True)
 
@@ -48,9 +48,7 @@ class AcademiaSerializerInput(serializers.Serializer):
 class AcademiaSerializerUpdateInput(AcademiaSerializerInput):
     password = serializers.CharField(required=False)
     nome = serializers.CharField(required=False)
-    email = serializers.EmailField(write_only=True, required=False, validators=[
-        UniqueValidator(queryset=User.objects.all(),
-                        message='Este email já está sendo usado por outro usuário')])
+    email = serializers.EmailField(write_only=True, required=False)
 
     def validate(self, attrs):
         if self.instance and self.instance.user.email != attrs.get('email'):
@@ -68,7 +66,7 @@ class AcademiaSerializerUpdateInput(AcademiaSerializerInput):
         for attr, value in validated_data.items():
             if attr == 'email':
                 setattr(instance.user, attr, value)
-            elif attr == 'nome':
+            elif attr == 'username':
                 setattr(instance.user, 'username', value)
             else:
                 setattr(instance, attr, value)
