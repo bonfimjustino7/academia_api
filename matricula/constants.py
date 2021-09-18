@@ -46,3 +46,27 @@ STATUS_MENSALIDADE = (
     ('D', 'NÃO PAGO'),
     ('N', 'NULA'),
 )
+
+# meios de pagamento
+CARTAO_CREDITO = 'CR'
+CARTAO_DEBITO = 'CD'
+PIX = 'PIX'
+BOLETO_BANCARIO = 'BB'
+DINHEIRO = 'D'
+
+MEIOS_PAGAMENTO = (
+    (CARTAO_CREDITO, 'CARTÃO DE CRÉDITO'),
+    (CARTAO_DEBITO, 'CARTÃO DE DÉBITO'),
+    (PIX, 'PIX'),
+    (BOLETO_BANCARIO, 'BOLETO BANCÁRIO'),
+    (DINHEIRO, 'DINHEIRO'),
+)
+
+# mensagens de razão para anular mensalidade
+ESTORNO = 'ESTORNO'
+ERRO_CONTABIL = 'ERRO_CONTABIL'
+
+RAZOES = (
+    (ESTORNO, 'A mensalidade foi estornada pelo gerente da academia.'),
+    (ERRO_CONTABIL, 'A mensalidade foi nula por erro contabil do gerente.'),
+)

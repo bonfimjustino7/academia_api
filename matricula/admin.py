@@ -6,7 +6,7 @@ from matricula.models import Matricula, Mensalidade
 class MensalidadeAdmin(admin.TabularInline):
     model = Mensalidade
     fields = ('ano', 'mes_referente', 'status', 'dt_vencimento')
-    can_delete = False
+    # can_delete = False
     extra = 0
     readonly_fields = ('ano', 'mes_referente', 'dt_vencimento')
 

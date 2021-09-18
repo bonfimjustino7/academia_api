@@ -45,20 +45,13 @@ class MatriculaTest(APITestCase):
         count_mensalidades = Mensalidade.objects.count()
         self.assertEqual(count_mensalidades, 12)
 
-    def test_vencimento_mensalidades(self):
-        mensalidades_dict = _get_date_mensalidades_mock()
-
-        mensalidades_queryset = Mensalidade.objects.values('dt_vencimento')
-        mensalidades = []
-        for value in mensalidades_queryset:
-            v = value['dt_vencimento']
-            mensalidades.append({'dt_vencimento': str(v)})
-
-        self.assertEqual(mensalidades_dict, mensalidades)
-
     def test_list_mensalidades(self):
         user = Aluno.objects.get(pk=1).user
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + user.auth_token.key)
         response = self.client.get(self.base_url_mensalidade)
 
         self.assertEqual(response.status_code, 200)
+
+    def test_criar_mensalidade(self):
+        mensalidades = Mensalidade.objects.generate_mensalidades(1, 50.0, 9, 2021)
+        self.assertEqual(len(mensalidades), 1)
